@@ -2,31 +2,62 @@ name: A股定点量能采集
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "57 9 * * 1-5"
+      timezone: "Asia/Shanghai"
+    - cron: "12 10 * * 1-5"
+      timezone: "Asia/Shanghai"
 
 permissions:
   contents: write
 
+concurrency:
+  group: a-share-turnover-collector
+  cancel-in-progress: false
+
 jobs:
   collect:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
+      - name: Determine target
+        id: target
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "value=all" >> "$GITHUB_OUTPUT"
+            echo "wait_flag=" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "57 9 * * 1-5" ]; then
+            echo "value=10:00" >> "$GITHUB_OUTPUT"
+            echo "wait_flag=--wait" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=10:15" >> "$GITHUB_OUTPUT"
+            echo "wait_flag=--wait" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run collector
         run: |
-          python collector.py --target all
+          python collector.py --target "${{ steps.target.outputs.value }}" ${{ steps.target.outputs.wait_flag }}
 
       - name: Save report
+        shell: bash
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "update report" || exit 0
-          git push
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports data
+
+          if git diff --cached --quiet; then
+            echo "没有新报告需要提交"
+          else
+            git commit -m "更新A股定点量能报告"
+            git push
+          fi
