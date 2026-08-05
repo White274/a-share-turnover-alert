@@ -1,0 +1,3 @@
+﻿trade_date,target_time,generated_at,shanghai_amount_yi,shenzhen_amount_yi,total_amount_yi,previous_day,previous_day_total_yi,previous_day_change_pct,five_day_average_yi,five_day_change_pct,classification,status
+2026-08-05,10:00,2026-08-05T13:52:02.986719+08:00,3783.33,4758.15,8541.48,2026-08-04,7251.62,17.79,7756.27,10.12,温和放量,success
+2026-08-05,10:15,2026-08-05T13:52:03.064930+08:00,4834.70,6020.14,10854.83,2026-08-04,9102.46,19.25,9707.93,11.81,温和放量,success
