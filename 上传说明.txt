@@ -1,0 +1,43 @@
+﻿最省事上传说明（无需安装软件）
+
+一、解压
+1. 右键本压缩包。
+2. 选择“全部解压”。
+3. 打开解压后的 a-share-turnover-alert-upload 文件夹。
+
+二、上传到GitHub
+1. 打开：https://github.com/White274/a-share-turnover-alert
+2. 回到仓库的 Code 首页，不要停留在 Settings。
+3. 点击“Add file”→“Upload files”。
+4. 把解压文件夹里面的所有内容拖到上传框：
+   - collector.py
+   - README.md
+   - .github 文件夹
+   注意：不要上传外层压缩包，也不要只上传.github里面的collect.yml。
+5. 页面底部 Commit message 可填：初始化A股定点量能采集
+6. 选择“Commit directly to the main branch”。
+7. 点击“Commit changes”。
+
+三、手动试运行
+1. 回到仓库首页，点击顶部“Actions”。
+2. 左侧点击“A股定点量能采集”。
+3. 右侧点击“Run workflow”。
+4. Branch选择main，再点绿色“Run workflow”。
+5. 等待约1—3分钟，刷新页面。
+6. 绿色对勾表示成功。
+7. 回到Code页，应该出现：
+   reports/latest_1000.md
+   reports/latest_1015.md
+   data/history.csv
+
+四、权限异常时
+如果“提交报告”步骤报错：
+1. 仓库 Settings。
+2. 左侧 Actions→General。
+3. 滚动到 Workflow permissions。
+4. 选择 Read and write permissions。
+5. Save。
+6. 回到Actions重新运行。
+
+五、完成后
+回到ChatGPT告诉清绾：“文件上传并运行完成”。
