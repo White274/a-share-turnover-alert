@@ -2,19 +2,11 @@ name: A股定点量能采集
 
 on:
   workflow_dispatch:
+
   schedule:
-    # 以下均为UTC时间，对应北京时间周一至周五
-    # 01:55 UTC = 09:55 北京时间，10:00主任务
-    - cron: "55 1 * * 1-5"
-
-    # 02:02 UTC = 10:02 北京时间，10:00备用任务
-    - cron: "2 2 * * 1-5"
-
-    # 02:10 UTC = 10:10 北京时间，10:15主任务
-    - cron: "10 2 * * 1-5"
-
-    # 02:17 UTC = 10:17 北京时间，10:15备用任务
-    - cron: "17 2 * * 1-5"
+    # UTC 01:20 = 北京时间09:20
+    # 每周一至周五只启动一次
+    - cron: "20 1 * * 1-5"
 
 permissions:
   contents: write
@@ -26,7 +18,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
@@ -37,31 +29,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Determine target
-        id: target
-        shell: bash
+      # =========================
+      # 第一阶段：等待并采集10:00
+      # =========================
+      - name: Collect 10:00
+        continue-on-error: true
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "value=all" >> "$GITHUB_OUTPUT"
-            echo "wait_flag=" >> "$GITHUB_OUTPUT"
+          python collector.py --target "10:00" --wait
 
-          elif [ "${{ github.event.schedule }}" = "55 1 * * 1-5" ] || \
-               [ "${{ github.event.schedule }}" = "2 2 * * 1-5" ]; then
-            echo "value=10:00" >> "$GITHUB_OUTPUT"
-            echo "wait_flag=--wait" >> "$GITHUB_OUTPUT"
-
-          else
-            echo "value=10:15" >> "$GITHUB_OUTPUT"
-            echo "wait_flag=--wait" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run collector
-        run: |
-          python collector.py \
-            --target "${{ steps.target.outputs.value }}" \
-            ${{ steps.target.outputs.wait_flag }}
-
-      - name: Save report
+      - name: Save 10:00 report
+        if: always()
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -70,8 +47,30 @@ jobs:
           git add reports data
 
           if git diff --cached --quiet; then
-            echo "没有新报告需要提交"
+            echo "10:00没有新报告需要提交"
           else
-            git commit -m "更新A股定点量能报告"
+            git commit -m "更新10:00量能报告"
+            git push
+          fi
+
+      # =========================
+      # 第二阶段：继续等待并采集10:15
+      # =========================
+      - name: Collect 10:15
+        if: always()
+        continue-on-error: true
+        run: |
+          python collector.py --target "10:15" --wait
+
+      - name: Save 10:15 report
+        if: always()
+        shell: bash
+        run: |
+          git add reports data
+
+          if git diff --cached --quiet; then
+            echo "10:15没有新报告需要提交"
+          else
+            git commit -m "更新10:15量能报告"
             git push
           fi
