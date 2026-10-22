@@ -1,0 +1,19 @@
+{
+  "trade_date": "2026-10-22",
+  "target_time": "10:00",
+  "generated_at": "2026-10-22T14:10:26.449243+08:00",
+  "shanghai_amount_yi": "1906.43",
+  "shenzhen_amount_yi": "2561.97",
+  "total_amount_yi": "4468.40",
+  "previous_day": "2026-10-21",
+  "previous_day_total_yi": "4927.13",
+  "previous_day_change_amount_yi": "-458.73",
+  "previous_day_change_pct": "-9.31",
+  "five_day_average_yi": "4899.96",
+  "five_day_change_amount_yi": "-431.56",
+  "five_day_change_pct": "-8.81",
+  "classification": "温和缩量",
+  "history_sample_count": 5,
+  "status": "success",
+  "source": "Eastmoney 5-minute index K-line JSON"
+}
